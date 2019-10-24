@@ -1,0 +1,454 @@
+Java 1.8.0_222
+Postgresdb 9.2.24
+Mongodb 3.2.22
+Nginx 1.17.4
+npm  6.4.1
+nodeJS –v  v8.16.1
+Node-RED version: v0.20.8
+Wso2 5.7.0
+Active mq 5.15.9
+
+
+
+install java 8 on centos
+
+https://www.liquidweb.com/kb/install-java-8-on-centos-7/
+
+java -version
+openjdk version "1.8.0_222"
+OpenJDK Runtime Environment (build 1.8.0_222-b10)
+OpenJDK 64-Bit Server VM (build 25.222-b10, mixed mode)
+
+
+
+
+
+
+
+install java 1.8 on ubuntu
+https://tecadmin.net/install-oracle-java-8-ubuntu-via-ppa/
+sudo apt update
+sudo apt install openjdk-8-jdk openjdk-8-jre
+java -version
+openjdk version "1.8.0_222"
+OpenJDK Runtime Environment (build 1.8.0_222-8u222-b10-1ubuntu1~18.04.1-b10)
+OpenJDK 64-Bit Server VM (build 25.222-b10, mixed mode)
+
+
+
+install jenkins on ubuntu
+https://www.digitalocean.com/community/tutorials/how-to-install-jenkins-on-ubuntu-18-04
+
+
+
+***********************************************************************************************************************************
+install tomcat
+https://www.vultr.com/docs/how-to-install-apache-tomcat-8-on-centos-7
+cd /usr/local/
+wget http://apachemirror.wuchna.com/tomcat/tomcat-9/v9.0.26/bin/apache-tomcat-9.0.26.tar.gz
+tar -xvzf apache-tomcat-9.0.26.tar.gz
+mkdir tomcat9
+mv apache-tomcat-9.0.26/* tomcat9/
+rm -rf apache-tomcat-9.0.26
+cd tomcat9/bin/
+chmod +X startup.sh
+./startup.sh
+
+
+***********************************************************************************************************************************
+
+install postgresdb
+
+postgres worked
+https://linuxize.com/post/how-to-install-postgresql-on-centos-7/#install-postgresql-from-the-postgresql-repositories
+PostgreSQL version 9.2.23.
+
+To install PostgreSQL on your CentOS server follow the steps below:
+
+sudo yum install postgresql-server postgresql-contrib
+sudo postgresql-setup initdb
+output
+Initializing database ... OK
+
+sudo systemctl start postgresql
+sudo systemctl enable postgresql	
+
+sudo -u postgres psql -c "SELECT version();"
+output:
+PostgreSQL 9.2.23 on x86_64-redhat-linux-gnu, compiled by gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-16), 64-bit
+
+PostgreSQL client authentication is defined in the configuration file named pg_hba.conf. By default, for local connections, PostgreSQL is set to use the peer authentication method.
+
+The postgres user is created automatically when you install PostgreSQL. This user is the superuser for the PostgreSQL instance and it is equivalent to the MySQL root user.
+
+
+sudo systemctl restart postgresql
+
+configuration of postgresql
+
+vi /var/lib/pgsql/data/pg_hba.conf
+
+https://stackoverflow.com/questions/18664074/getting-error-peer-authentication-failed-for-user-postgres-when-trying-to-ge
+keep all as trust
+
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     trust
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            trust
+# IPv6 local connections:
+host    all             all             ::1/128                 trust
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+
+
+after changing the settings in pg_hba.conf file need to restart the service 
+sudo service postgresql restart
+
+
+sudo su - postgres
+psql -U postgres  -->  login to the postgres DB
+postgres@MANTRATESTSERVER:/home/MANTRA-USER$ psql -U postgres
+admin is the password
+psql (11.4 (Ubuntu 11.4-1.pgdg18.04+1))
+Type "help" for help.
+
+postgres=# \list
+postgres=# \q
+pg_dump -U username dbname > dbexport.pgsql
+pg_dump gregdb > gregdb309019.db
+pg_dump -U postgres gregdb > gregdb309019.psql
+
+\c dbname
+\dt  for tables
+psql gregdb <  
+ex
+DROP DATABASE gregdb;
+
+CREATE DATABASE gregdb;
+psql -U postgres gregdb < gregdb309019.psql    worked
+
+
+ps -ef | grep wso2
+tail -f | grep nohup.outnohup /usr/lib/wso2/wso2is/5.7.0/bin/launcher_wso2server.sh &
+cd /usr/lib/wso2/wso2is/5.7.0/bin/
+
+./launcher_wso2server.sh
+
+
+or
+nohup /usr/lib/wso2/wso2is/5.7.0/bin/launcher_wso2server.sh &
+
+
+ALTER USER postgres PASSWORD 'admin';   to reset the password
+pg_dump gregdb > /home/MANTRA-USER/gregdb592019-1.db
+pg_dump -U $username --format=c --file=$mydatabase.sqlc $dbname
+pg_dump -U postgres --file=
+
+
+***********************************************************************************************************************************
+install tomcat
+https://www.youtube.com/watch?v=m21nFreFw8A
+chmod +X startup.sh
+
+
+***********************************************************************************************************************************
+
+nginx
+
+https://www.cyberciti.biz/faq/how-to-install-and-use-nginx-on-centos-7-rhel-7/
+sudo vi /etc/yum.repos.d/nginx.repo
+
+[nginx]
+name=nginx repo
+baseurl=http://nginx.org/packages/mainline/centos/7/$basearch/
+gpgcheck=0
+enabled=1
+
+
+yum install epel-release
+in AWS Amazon Linux:  sudo amazon-linux-extras install rust1
+yum install nginx 
+nginx -v
+
+https://stackoverflow.com/questions/23948527/13-permission-denied-while-connecting-to-upstreamnginx
+
+setsebool httpd_can_network_connect on
+setsebool httpd_can_network_connect on -P
+getsebool -a | grep httpd
+
+
+sudo firewall-cmd --permanent --zone=public --add-service=http
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --reload
+
+nginx will install under  /etc/nginx/
+add the following entries in 
+vi /etc/nginx/nginx.conf
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+http {
+    client_max_body_size 200M;
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+location /activemq/ {
+        proxy_pass  http://localhost:8161/;
+    }
+    location /gateway/ {
+        proxy_pass   http://localhost:8500/;
+    }
+    location /austriaUI {
+       proxy_pass   http://52.172.15.122/austriaUI/;
+    }
+    location /laasUI {
+       proxy_pass   http://52.172.15.122/laasUI/;
+    }
+
+    location /nodered/ {
+    proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Origin "";
+        proxy_pass http://localhost:1880/;
+    }
+
+
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+
+
+
+
+/usr/local/
+ln -s /opt/tomcat/bin/startup.sh /usr/local/bin/tomcatup
+
+/usr/local/tomcat9/bin/
+./startup.sh
+./shutdown.sh
+
+we need to copy files from LH4 to LH4Dev
+/usr/local/tomcat9/webapps/  
+austria-preselect.war
+and
+lass.war
+
+
+activemq   is required only where mantra is running
+cd /opt/
+wget file in d:/installable/
+tar -xvzf apache-activemq-5.15.0-bin.zip
+mkdir activemq
+mv apache-activemq-5.15.0/* activemq/
+cd /activemq/bin/
+sudo sh activemq start 
+
+
+
+ps -ef | grep mongo
+
+
+
+
+nano /etc/yum.repos.d/mongodb-org.repo
+[mongodb-org-4.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/4.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
+
+[mongodb-org-3.2]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/3.2/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-3.2.asc
+
+[mongodb-org-4.2]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/amazon/2/mongodb-org/4.2/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-4.2.asc
+
+
+yum install mongodb-org
+   15  rpm -qa | grep mongod
+   16  rpm -qa | grep mongodb
+   17  systemctl start mongod
+   18  systemctl status mongod
+   19  tail /var/log/mongodb/mongod.log
+   20  mongo
+   21  systemctl is-enabled mongod.service & ; echo $?
+   22  systemctl is-enabled mongod.service ; echo $?
+   23  systemctl enable mongod
+
+
+
+
+
+
+LH4 configuration
+
+java
+tomcat
+postgresdb
+nginx
+activemq
+i.copied all the images from austria LH4 to LH4-Dev    /var/viewdata/images
+ii.postgresdb imported from LH4 to LH4-Dev
+
+nginx configuration
+files should be copied in /usr/share/nginx 
+under this directires are
+AustriaUI
+laasUI
+
+
+
+
+
+
+tomcat9 configuration
+austria-preselect.war and laas.war copied to /usr/local/tomcat9/webapps/
+
+start the tomcat service by /usr/local/tomcat9/bin/  ./startup.sh  ./shutdown.sh
+add the following lines in /usr/local/tomcat9/bin/server.xml
+        <Context docBase="/var/viewdata/images/thumbnail" path="/austria-preselect/static/html/images/thumbnail"/>
+        <Context docBase="/var/viewdata/images/media" path="/austria-preselect/static/html/images/media"/>
+        <Context docBase="/var/viewdata/images/thumbnail" path="/austria/images/thumbnail"/>
+        <Context docBase="/var/viewdata/images/media" path="/austria/images/media"/>
+        <Context docBase="/var/viewdata/images/semseg" path="/austria/images/semseg"/>
+        <Context docBase="/var/viewdata/images/entropy_overlay" path="/austria/images/entropy_overlay"/>
+        <Context docBase="/var/viewdata/images/road_entropy_overlay" path="/austria/images/road_entropy_overlay"/>
+
+
+node-red worked
+https://nodered.org/docs/getting-started/local
+
+
+mongodb dump in LH4
+[root@LH4-Dev ~]# cd /home/LH4-Dev/mantra/dump/
+austriaDB/           austriaDB-preselect/ austriaDB-search/    laasdb/
+[root@LH4-Dev ~]# cd /home/LH4-Dev/mantra/dump/^C
+[root@LH4-Dev ~]# \cp -r dump/austriaDB/* /home/LH4-Dev/mantra/dump/austriaDB/
+[root@LH4-Dev ~]# \cp -r dump/austriaDB-preselect/* /home/LH4-Dev/mantra/dump/austriaDB-preselect/
+[root@LH4-Dev ~]# \cp -r dump/austriaDB-search/* /home/LH4-Dev/mantra/dump/austriaDB-search/
+[root@LH4-Dev ~]# \cp -r dump/laasdb/* /home/LH4-Dev/mantra/dump/laasdb/
+\cp -r UIbkp/21102019/app/directives/projectnodered/project-nodered-template.html /usr/share/nginx/html/app/directives/projectnodered/project-nodered-template.html
+
+curl -sL https://rpm.nodesource.com/setup_8.x | sudo bash -
+wso2
+configuration:
+[root@decsbvm4 identity]# cp /mnt/decdatatransfer/backend/1stOct/project/identity.xml /usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity/identity.xml
+cp: overwrite ‘/usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity/identity.xml’? y
+
+[root@decsbvm4 datasources]# cp /mnt/decdatatransfer/backend/1stOct/project/master-datasources.xml /usr/lib64/wso2/wso2is/5.7.0/repository/conf/datasources/master-datasources.xml
+cp: overwrite ‘/usr/lib64/wso2/wso2is/5.7.0/repository/conf/datasources/master-datasources.xml’? y
+
+[root@decsbvm4 lib]# cp /mnt/decdatatransfer/backend/1stOct/project/postgresql-42.2.5.jar /usr/lib64/wso2/wso2is/5.7.0/repository/components/lib/
+
+[root@decsbvm4 conf.d]# cd /usr/lib64/wso2/wso2is/5.7.0/repository/conf/
+
+[root@decsbvm4 conf]#  cp /mnt/decdatatransfer/backend/1stOct/project/carbon.xml carbon.xml
+cp: overwrite ‘carbon.xml’? y
+[root@decsbvm4 conf]# cp /mnt/decdatatransfer/backend/1stOct/project/user-mgt.xml user-mgt.xml
+cp: overwrite ‘user-mgt.xml’? y
+[root@decsbvm4 conf]# cp /mnt/decdatatransfer/backend/1stOct/project/master-datasources.xml ./datasources/master-datasources.xml
+cp: overwrite ‘./datasources/master-datasources.xml’? y
+[root@decsbvm4 conf]# cp /mnt/decdatatransfer/backend/1stOct/project/identity.xml ./identity/identity.xml
+cp: overwrite ‘./identity/identity.xml’? y
+[root@decsbvm4 conf]# cp /mnt/decdatatransfer/backend/1stOct/project/postgresql-42.2.5.jar ../components/lib/
+cp: overwrite ‘../components/lib/postgresql-42.2.5.jar’? y
+
+identity.xml
+master-datasources.xml
+postgresql-42.2.5.jar
+carbon.xml
+user-mgt.xml
+master-datasources.xml
+
+
+nohup  /usr/lib64/wso2/wso2is/5.7.0/bin/launcher_wso2server.sh &
+to start wso2
+to stop wso2
+ps -ef | grep wso2 
+then kill those process
+********************************************************************************************************
+
+to install nodejs and npm worked
+yum install epel-release
+yum install -y curl
+curl --silent --location https://rpm.nodesource.com/setup_8.x | sudo bash -
+yum install gcc-c++ make
+
+
+
+Test@1234
+
+ vi /root/.node-red/.config.json
+ root@MANTRATESTSERVER:~# \cp -r /usr/share/nginx/html/nodered/index.mst /usr/lib/node_modules/node-red/node_modules/@node-red/editor-client/templates/index.mst
+ 
+ 
+ 
+ 
+[root@decsbvm4 ~]# cd /usr/lib64/wso2/wso2is/5.7.0/
+bin/        jdk/        modules/    resources/  tmp/
+dbscripts/  lib/        repository/ solr/       updates/
+[root@decsbvm4 ~]# cd /usr/lib64/wso2/wso2is/5.7.0/re
+repository/ resources/
+[root@decsbvm4 ~]# cd /usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity/
+[root@decsbvm4 identity]# ls
+application-authentication.xml  jaas.conf
+captcha-config.properties       krb5.conf
+charon-config.xml               msg-mgt.properties
+embedded-ldap.xml               oidc-scope-config.xml
+EndpointConfig.properties       provisioning-config.xml
+entitlement.properties          saml1-assertion-config.xml
+identity-event.properties       service-providers
+identity-mgt.properties         sso-idp-config.xml
+identity-providers              thrift-authentication.xml
+identity.xml
+[root@decsbvm4 identity]# pwd
+/usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity
+
+
+[root@decsbvm4 identity]# cp /mnt/decdatatransfer/backend/1stOct/project/identity.xml /usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity/identity.xml
+cp: overwrite ‘/usr/lib64/wso2/wso2is/5.7.0/repository/conf/identity/identity.xml’? y
+
+[root@decsbvm4 datasources]# cp /mnt/decdatatransfer/backend/1stOct/project/master-datasources.xml /usr/lib64/wso2/wso2is/5.7.0/repository/conf/datasources/master-datasources.xml
+cp: overwrite ‘/usr/lib64/wso2/wso2is/5.7.0/repository/conf/datasources/master-datasources.xml’? y
+
+[root@decsbvm4 lib]# cp /mnt/decdatatransfer/backend/1stOct/project/postgresql-42.2.5.jar /usr/lib64/wso2/wso2is/5.7.0/repository/components/lib/
+
